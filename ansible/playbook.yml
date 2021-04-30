@@ -1,0 +1,44 @@
+---
+- name: setup a basic node
+  hosts: all
+  vars_files:
+    - vars.yml
+  become: true
+  become_user: root
+
+  tasks:
+    - name: Update apt cache
+      apt: update_cache=yes cache_valid_time=604800 # 1 week in seconds (7*24*3600)
+
+    - name: Add an Apt signing key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: add apt repository of docker
+      apt_repository:
+        repo: deb [arch={{arch}}] https://download.docker.com/linux/ubuntu {{ubuntu_release}} stable
+        state: present
+
+    - name: install dependencies
+      apt: package={{system_packages}} state=present update_cache=true
+
+    - name: install python packages
+      pip: name={{python_packages}} state=present  executable=pip3
+
+    - name: create user groups
+      group: name={{item.name}} state={{item.state | default('present')}}
+      with_items: "{{ users }}"
+
+    - name: Add users
+      user: name={{ item.name }} state={{item.state | default('present')}} group={{ item.name }} groups={{item.groups}} shell=/bin/bash
+      with_items: "{{ users }}"
+
+    - name: Add authorized keys
+      authorized_key: "user={{ item.0.name }} key='{{ lookup('file', item.1) }}'"
+      with_subelements:
+         - "{{ users }}"
+         - authorized_keys
+
+    - name: enable password less sudo for users in sudo group
+      lineinfile: "dest=/etc/sudoers state=present regexp='^%sudo' line='%sudo ALL=(ALL:ALL) NOPASSWD:ALL'"
