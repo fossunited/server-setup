@@ -6,6 +6,7 @@ system_packages:
   - python3
   - python3-dev
   - python3-pip
+  - python3-venv
   - postgresql-client
   - docker-ce
   - docker-ce-cli
@@ -14,6 +15,7 @@ system_packages:
   - sysstat
   - nginx
   - vim
+  - supervisor
 
 arch: amd64
 ubuntu_release: focal
@@ -25,12 +27,21 @@ users:
   - name: anand
     authorized_keys:
       - authorized_keys/anand-bhuvanam-id-rsa.pub
+      - authorized_keys/anand-x230-id-rsa.pub
+    groups:
+      - sudo
+      - docker
+  - name: kaustubh
+    authorized_keys:
+      - authorized_keys/nikochiko.keys
     groups:
       - sudo
       - docker
   - name: fossunited
     authorized_keys:
       - authorized_keys/anand-bhuvanam-id-rsa.pub
+      - authorized_keys/anand-x230-id-rsa.pub
+      - authorized_keys/nikochiko.keys
     groups:
       - sudo
       - docker
