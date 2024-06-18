@@ -17,7 +17,7 @@ system_packages:
   - vim
   - supervisor
 
-arch: amd64
+arch: amd64Ansible Automation Platform
 ubuntu_release: focal
 
 python_packages:
