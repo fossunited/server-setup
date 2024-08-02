@@ -1,0 +1,14 @@
+version: "3.9"
+services:
+        vaultwarden:
+                restart: unless-stopped
+                environment:
+                        - ADMIN_TOKEN=$[ADMIN_TOKEN]
+                volumes:
+                        - '/docker/vaultwarden:/data/'
+                ports:
+                        - "8080:80"
+                        - "3012:3012"
+
+                image: 'vaultwarden/server:latest'
+
