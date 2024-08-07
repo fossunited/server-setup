@@ -8,5 +8,5 @@ Shell scripts, ansible scripts and config files for foss united servers and self
 - [Nextcloud](https://nextcloud.com) - Experimenting with nextcloud for switching from the GSuite (like GDoc, GSpreadsheets)
 - [Vaultwarden](./servers/apps/vaultwarden/README.md) - Password Management on Organization and User level
 - [Mattermost](./servers/apps/mattermost/mattermost.md) - For Internal team discussions
-- [Librechat](https://www.librechat.ai/) - Custom ChatGPT Web UI called [Echo](https://echo.fossunited.org)
+- [Librechat](https://www.librechat.ai/) - AI chat platform/search engine called [Echo](https://echo.fossunited.org)
 - [Livecode](https://github.com/fossunited/falcon) -  A service that execute code in any programming language in a sandboxed environment. 
