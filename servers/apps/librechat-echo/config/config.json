@@ -1,0 +1,123 @@
+{
+    "Server Configuration": {
+        "APP_TITLE": "Echo",
+        "CUSTOM_FOOTER": "Echo @ FOSS United Foundation",
+        "HOST": "$hostURL",
+        "PORT": 3080,
+        "MONGO_URI": "mongodb://$portURL/LibreChat",
+        "DOMAIN_CLIENT": "http://echo.fossunited.org",
+        "DOMAIN_SERVER": "http://echo.fossunited.org",
+        "NO_INDEX": true
+    },
+    "Debug Logging": {
+        "DEBUG_LOGGING": true,
+        "DEBUG_CONSOLE": false
+    },
+    "Endpoints": {
+        "ENDPOINTS": [
+            "openAI",
+            "assistants"
+        ],
+        "PROXY": ""
+    },
+    "OpenAI": {
+        "OPENAI_API_KEY": "$key",
+        "OPENAI_MODELS": [
+            "gpt-4-turbo",
+            "gpt-4o"
+        ],
+        "DEBUG_OPENAI": true
+    },
+    "Assistants API": {
+        "ASSISTANTS_API_KEY": "$key",
+        "ASSISTANTS_MODELS": [
+            "gpt-4-turbo",
+            "gpt-4o"
+        ]
+    },
+    "Plugins": {
+        "DEBUG_PLUGINS": true,
+        "CREDS_KEY": "$key",
+        "CREDS_IV": "$key"
+    },
+    "Stable Diffusion": {
+        "SD_WEBUI_URL": "[$url]"
+    },
+    "Search": {
+        "SEARCH": true,
+        "MEILI_NO_ANALYTICS": true,
+        "MEILI_HOST": "http://0.0.0.0:7700",
+        "MEILI_MASTER_KEY": "$key"
+    },
+    "Moderation": {
+        "OPENAI_MODERATION": false,
+        "OPENAI_MODERATION_REVERSE_PROXY": null,
+        "BAN_VIOLATIONS": true,
+        "BAN_DURATION": 7200000,
+        "BAN_INTERVAL": 20,
+        "LOGIN_VIOLATION_SCORE": 1,
+        "REGISTRATION_VIOLATION_SCORE": 1,
+        "CONCURRENT_VIOLATION_SCORE": 1,
+        "MESSAGE_VIOLATION_SCORE": 1,
+        "NON_BROWSER_VIOLATION_SCORE": 20,
+        "LOGIN_MAX": 7,
+        "LOGIN_WINDOW": 5,
+        "REGISTER_MAX": 5,
+        "REGISTER_WINDOW": 60,
+        "LIMIT_CONCURRENT_MESSAGES": true,
+        "CONCURRENT_MESSAGE_MAX": 2,
+        "LIMIT_MESSAGE_IP": true,
+        "MESSAGE_IP_MAX": 40,
+        "MESSAGE_IP_WINDOW": 1,
+        "LIMIT_MESSAGE_USER": false,
+        "MESSAGE_USER_MAX": 40,
+        "MESSAGE_USER_WINDOW": 1,
+        "ILLEGAL_MODEL_REQ_SCORE": 5
+    },
+    "Balance": {
+        "CHECK_BALANCE": false
+    },
+    "Registration and Login": {
+        "ALLOW_EMAIL_LOGIN": false,
+        "ALLOW_REGISTRATION": false,
+        "ALLOW_SOCIAL_LOGIN": true,
+        "ALLOW_SOCIAL_REGISTRATION": true,
+        "SESSION_EXPIRY": 900000,
+        "REFRESH_TOKEN_EXPIRY": 604800000,
+        "JWT_SECRET": "$secret",
+        "JWT_REFRESH_SECRET": "$secret",
+        "Discord": {
+            "DISCORD_CLIENT_ID": null,
+            "DISCORD_CLIENT_SECRET": null,
+            "DISCORD_CALLBACK_URL": "/oauth/discord/callback"
+        },
+        "Facebook": {
+            "FACEBOOK_CLIENT_ID": null,
+            "FACEBOOK_CLIENT_SECRET": null,
+            "FACEBOOK_CALLBACK_URL": "/oauth/facebook/callback"
+        },
+        "GitHub": {
+            "GITHUB_CLIENT_ID": null,
+            "GITHUB_CLIENT_SECRET": null,
+            "GITHUB_CALLBACK_URL": "/oauth/github/callback"
+        },
+        "Google": {
+            "GOOGLE_CLIENT_ID": "$url_id",
+            "GOOGLE_CLIENT_SECRET": "$secret",
+            "GOOGLE_CALLBACK_URL": "/oauth/google/callback"
+        },
+        "OpenID": {
+            "OPENID_CLIENT_ID": null,
+            "OPENID_CLIENT_SECRET": null,
+            "OPENID_ISSUER": null,
+            "OPENID_SESSION_SECRET": null,
+            "OPENID_SCOPE": "openid profile email",
+            "OPENID_CALLBACK_URL": "/oauth/openid/callback",
+            "OPENID_BUTTON_LABEL": null,
+            "OPENID_IMAGE_URL": null
+        }
+    },
+    "Help and FAQ": {
+        "HELP_AND_FAQ_URL": "https://librechat.ai"
+    }
+}

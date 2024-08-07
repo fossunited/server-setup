@@ -1,0 +1,39 @@
+version: 1.0.3
+
+# Cache settings: Set to true to enable caching
+cache: true
+
+# Example Registration Object Structure (optional)
+registration:
+  socialLogins: ["google"]
+  # allowedDomains:
+    # - "gmail.com"
+
+fileConfig:
+  endpoints:
+    assistants:
+      fileLimit: 5
+      fileSizeLimit: 10  # Maximum size for an individual file in MB
+      totalSizeLimit: 50  # Maximum total size for all files in a single request in MB
+      supportedMimeTypes:
+        - "image/.*"
+        - "application/pdf"
+    openAI:
+      disabled: false  # Disables file uploading to the OpenAI endpoint
+    default:
+      totalSizeLimit: 20
+    # YourCustomEndpointName:
+    #   fileLimit: 2
+    #   fileSizeLimit: 5
+  serverFileSizeLimit: 100  # Global server file size limit in MB
+  avatarSizeLimit: 2  # Limit for user avatar image size in MB
+rateLimits:
+  fileUploads:
+    ipMax: 100
+    ipWindowInMinutes: 60  # Rate limit window for file uploads per IP
+    userMax: 50
+    userWindowInMinutes: 60  # Rate limit window for file uploads per user
+
+endpoints:
+  assistants:
+    disableBuilder: true
