@@ -7,6 +7,14 @@ LibreChat is a self-hosted solution designed for organization members to browse 
 - Last Updated Version: `0.6.10`
 - Install Dir: /LibreChat
 
+### Server Specifications
+- Server name: echo-librechat
+- 1 CPU Core
+- 1 GB RAM
+- 25 GB Storage
+- OS: Debian 12
+
+
 Currently the system uses the following models: 
 - GPT4 
 - GPT4o
