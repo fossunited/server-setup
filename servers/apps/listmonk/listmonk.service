@@ -1,0 +1,15 @@
+[Unit]
+Description=Listmonk service for sending mails 🎉
+Requires=network.target
+
+[Service]
+Type=simple
+User=listmonk
+Group=listmonk
+WorkingDirectory=/opt/listmonk
+ExecStart=/opt/listmonk/listmonk
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target
