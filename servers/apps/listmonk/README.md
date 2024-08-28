@@ -8,7 +8,7 @@ Latest updated version: ```v3.0.0 (f9120d9 2024-02-04T11:20:27Z, linux/amd64)```
 Install Dir: `/opt/listmonk`
 Backups Dir: `/opt/backups`
 OS: Ubuntu 20.04 LTS
-RAM: 1Gib
+RAM: 1GB
 Database: Postgresql 
 
 ### self host instructions
