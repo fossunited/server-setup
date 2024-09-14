@@ -1,0 +1,3 @@
+nextcloud.fossunited.org {
+	reverse_proxy http://nextcloud-aio-apache:11000
+}

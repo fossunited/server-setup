@@ -1,0 +1,29 @@
+version: '2'
+
+services:  
+  caddy:
+    container_name: caddy
+    # until caddy supports my DNS provider natively
+    image: local/caddy:latest
+    restart: unless-stopped
+    volumes:
+      - "./data:/data"
+      - "./config:/config"
+      - "./etc/Caddyfile:/etc/caddy/Caddyfile:ro"
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      caddy:
+        aliases:
+          - nextcloud.fossunited.org
+      nextcloud-aio:
+        aliases:
+          - nextcloud.fossunited.org
+
+networks:
+  caddy:
+    name: caddy
+  nextcloud-aio:
+    name: nextcloud-aio
+    external: true
