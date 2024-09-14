@@ -26,7 +26,7 @@ Current version of nextcloud is: 29.0.4, can be found via `sudo docker inspect n
 
 #### The update procedure is as follows: 
 
-- Open the following url in your browser: https://<nextcloud-server-ip>/containers, the browser will ask you to kill the nextcloud-aio-apache container. 
+- Open the following url in your browser: https://`<nextcloud-server-ip>`/containers, the browser will ask you to kill the nextcloud-aio-apache container. 
 - SSH into the server and kill the `nextcloud-aio-apache` container by running `sudo docker stop nextcloud-aio-apache`. 
 - After this, reload the browser and you should be able to see the AIO Container Dashboard. Finally, update the mastercontainer :). 
 
