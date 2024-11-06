@@ -1,0 +1,25 @@
+[matrix]
+[matrix.main]
+Server="https://matrix.tchncs.de"
+MxID="@fu-bot:tchncs.de"
+Token="REDACTED"
+
+HTMLDisable=false
+# UseUserName shows the username instead of the server nickname
+UseUserName=false
+KeepQuotedReply=true
+ShowJoinPart=true
+
+[telegram]
+[telegram.main]
+Token="REDACTED"
+MessageFormat="HTML"
+UseFullName=true
+
+[general]
+RemoteNickFormat="<b>{NICK}</b>: "
+QuoteFormat="{MESSAGE} (re @{QUOTENICK}: {QUOTEMESSAGE})"
+IgnoreFailureOnStart=false
+MessageFormat="HTMLNick :"
+
+<TEMPLATE AS MENTIONED IN README FILE>
