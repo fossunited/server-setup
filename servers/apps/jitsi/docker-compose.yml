@@ -507,10 +507,13 @@ services:
             - SKIN_NAME=${ETHERPAD_SKIN_NAME}
             - SKIN_VARIANTS=${ETHERPAD_SKIN_VARIANTS}
             - SUPPRESS_ERRORS_IN_PAD_TEXT=true
+        volumes:
+            - etherpad_data:/opt/etherpad-lite/var
         networks:
             meet.jitsi:
                 aliases:
                     - etherpad.meet.jitsi
+    
     jibri:
         image: jitsi/jibri:${JITSI_IMAGE_VERSION:-stable-10184}
         restart: ${RESTART_POLICY:-unless-stopped}
@@ -578,3 +581,6 @@ services:
 # Custom network so all services can communicate using a FQDN
 networks:
     meet.jitsi:
+
+volumes:
+    etherpad_data:
