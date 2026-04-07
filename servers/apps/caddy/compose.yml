@@ -1,0 +1,26 @@
+services:
+  caddy:
+    image: caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - /root/filebrowser/srv:/filebrowser
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - default
+      - jitsi
+
+networks:
+  default:
+  jitsi:
+    external: true
+    name: docker-jitsi-meet_meet.jitsi
+
+volumes:
+  caddy_data:
+  caddy_config:

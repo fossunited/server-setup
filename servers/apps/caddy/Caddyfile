@@ -1,0 +1,42 @@
+(acmedns) {
+        #tls {
+                #dns cloudflare TfpPFlki_HDgomm0H1mLhY5XDNcN1G2-_KTHHEyU
+        #}
+}
+
+# Jitsi
+meet.fossunited.org {
+    handle_path /etherpad/* {
+        reverse_proxy etherpad.meet.jitsi:9001
+    }
+    handle {
+        reverse_proxy 139.144.1.25:8000 {
+            header_up X-Real-IP {remote_host}
+        }
+    }
+}
+# Excalidraw backend for jitsi
+whiteboard.meet.fossunited.org {
+    reverse_proxy 139.144.1.25:8695 {
+        header_up Host {host}
+        header_up X-Real-IP {remote_host}
+        # WebSocket upgrade support
+        transport http {
+            keepalive 30s
+        }
+    }
+}     
+
+files.fossunited.org {
+	file_server {
+		browse
+	}
+	root * /filebrowser
+}     
+filemanager.fossunited.org {
+        reverse_proxy 139.144.1.25:8090
+}
+
+fureport.tamilnadu.tech {
+	reverse_proxy ghost-blog:2368
+}
