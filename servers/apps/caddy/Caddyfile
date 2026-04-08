@@ -1,0 +1,46 @@
+# again same password as listmonk to decrypt (in emacs M-x epa-decrypt-region)
+-----BEGIN PGP MESSAGE-----
+
+jA0ECQMKduqVxERu8UD/0o8B4hJWwSwrcHzypx+hn4e0GYJcmqeOw0eVxlndWUF+
+mxGo87FHqEn2oUgI+z5MkGQa9UqlosNLReGO4DpaHQWoJqC+oYUVrf42LMXjZUYi
+wUP3Ccvq0bhD7S2F9IapF121OdyqYK9i6Bus09JGAjKvF6IwQQ4/p1UAMUDr9LC3
+hRIcQIxOdWHcNTvZpjW3eQ==
+=DBeZ
+-----END PGP MESSAGE-----
+
+# Jitsi
+meet.fossunited.org {
+    handle_path /etherpad/* {
+        reverse_proxy etherpad.meet.jitsi:9001
+    }
+    handle {
+        reverse_proxy 139.144.1.25:8000 {
+            header_up X-Real-IP {remote_host}
+        }
+    }
+}
+# Excalidraw backend for jitsi
+whiteboard.meet.fossunited.org {
+    reverse_proxy 139.144.1.25:8695 {
+        header_up Host {host}
+        header_up X-Real-IP {remote_host}
+        # WebSocket upgrade support
+        transport http {
+            keepalive 30s
+        }
+    }
+}     
+
+files.fossunited.org {
+	file_server {
+		browse
+	}
+	root * /filebrowser
+}     
+filemanager.fossunited.org {
+        reverse_proxy 139.144.1.25:8090
+}
+
+fureport.tamilnadu.tech {
+	reverse_proxy ghost-blog:2368
+}
