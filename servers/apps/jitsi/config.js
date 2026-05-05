@@ -43,24 +43,30 @@ config.flags = {
 
 // ScreenShare Configuration.
 //
+config.desktopSharingFrameRate = { min: 5, max: 15 };
+config.disableSuspendVideo = true;
+config.maxFullResolutionParticipants = -1;
+config.channelLastN = -1;
 
 // Audio configuration.
 //
 
 config.enableNoAudioDetection = true;
-config.enableTalkWhileMuted = false;
+config.enableTalkWhileMuted = true;
 config.disableAP = false;
 config.disableAGC = false;
 
 config.audioQuality = {
-    stereo: false
+    stereo: false,
+    // opusMaxAverageBitrate intentionally NOT set — setting it disables echo cancellation,
+    // noise suppression and AGC, which matter more than raw bitrate for voice meetings
 };
 
 config.startAudioOnly = false;
-config.startAudioMuted = 10;
+config.startAudioMuted = 5;
 config.startWithAudioMuted = false;
 config.startSilent = false;
-config.enableOpusRed = false;
+config.enableOpusRed = true;
 config.disableAudioLevels = false;
 config.enableNoisyMicDetection = true;
 
@@ -70,7 +76,7 @@ config.enableNoisyMicDetection = true;
 
 config.p2p = {
     enabled: true,
-    codecPreferenceOrder: ["AV1", "VP9", "VP8", "H264"],
+    codecPreferenceOrder: ["VP9", "VP8", "AV1", "H264"],
     mobileCodecPreferenceOrder: ["VP8", "VP9", "H264", "AV1"]
 };
 
@@ -191,7 +197,7 @@ config.disableDeepLinking = false;
 //
 
 config.videoQuality = {};
-config.videoQuality.codecPreferenceOrder = ["AV1", "VP9", "VP8", "H264"];
+config.videoQuality.codecPreferenceOrder = ["VP9", "VP8", "AV1", "H264"];
 config.videoQuality.mobileCodecPreferenceOrder = ["VP8", "VP9", "H264", "AV1"];
 config.videoQuality.enableAdaptiveMode = true;
 
