@@ -204,6 +204,7 @@ services:
         volumes:
             - ${CONFIG}/prosody/config:/config:Z
             - ${CONFIG}/prosody/prosody-plugins-custom:/prosody-plugins-custom:Z
+            - ${MEETINGS_DIR}:/meetings:Z
         environment:
             - AUTH_TYPE
             - DISABLE_POLLS
@@ -519,6 +520,7 @@ services:
         restart: ${RESTART_POLICY:-unless-stopped}
         volumes:
             - ${CONFIG}/jibri:/config:Z
+            - ${MEETINGS_DIR}:/meetings:Z
         shm_size: '2gb'
         cap_add:
             - SYS_ADMIN

@@ -76,7 +76,7 @@ config.enableNoisyMicDetection = true;
 
 config.p2p = {
     enabled: true,
-    codecPreferenceOrder: ["VP9", "VP8", "AV1", "H264"],
+    codecPreferenceOrder: ["AV1", "VP9", "VP8", "H264"],
     mobileCodecPreferenceOrder: ["VP8", "VP9", "H264", "AV1"]
 };
 
@@ -175,6 +175,7 @@ config.roomPasswordNumberOfDigits = false;
 // Transcriptions (subtitles and buttons can be configured in interface_config)
 config.transcription = {
     enabled: false,
+    disableClosedCaptions: true,
     translationLanguages: [],
     translationLanguagesHead: ['en'],
     useAppLanguage: true,
@@ -197,9 +198,11 @@ config.disableDeepLinking = false;
 //
 
 config.videoQuality = {};
-config.videoQuality.codecPreferenceOrder = ["VP9", "VP8", "AV1", "H264"];
+config.videoQuality.codecPreferenceOrder = ["AV1", "VP9", "VP8", "H264"];
 config.videoQuality.mobileCodecPreferenceOrder = ["VP8", "VP9", "H264", "AV1"];
-config.videoQuality.enableAdaptiveMode = true;
+config.videoQuality.enableAdaptiveMode = false;
+config.disableSuspendVideo = true;
+config.maxFullResolutionParticipants = -1;
 
 config.videoQuality.av1 = {};
 

@@ -1,87 +1,94 @@
-# Server
+# Jitsi Meet (https://meet.fossunited.org)
 
-- uname -a
-`Linux localhost 6.1.0-37-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.1.140-1 (2025-05-22) x86_64 GNU/Linux`
+Stock [docker-jitsi-meet](https://github.com/jitsi/docker-jitsi-meet). We only change `.env` and `config.js`, everything else is upstream default. Etherpad is bundled in for meeting notes. Runs on the meet host (specs at the bottom).
 
-```bash
-echo "=== CPU ==="
-lscpu | grep -E 'Model name|CPU\(s\)|Thread|Core|Socket'
+On the server the dir is in `/root/docker-jitsi-meet` and config lives in `~/.jitsi-meet-cfg`.
 
-echo -e "\n=== RAM ==="
-free -h
+## Files here
 
-echo -e "\n=== Disk ==="
-df -h /
+- `.env` :: config.
+- `config.js` :: web frontend tweaks, goes to `~/.jitsi-meet-cfg/web/config.js`.
+- `docker-compose.yml` :: stock, plus etherpad and a `/meetings` volume.
+- `prosody-plugins-custom/mod_meeting_report.lua` :: custom plugin, see below.
+- `jibri/finalize.sh` :: moves a recording into its meeting folder.
+- `gen-mod-token.py` :: makes a moderator JWT, `python gen-mod-token.py <name> [room]`.
 
-echo -e "\n=== OS ==="
-cat /etc/os-release | grep PRETTY_NAME
+## Custom: per-meeting report (Lua)
 
-echo -e "\n=== Kernel ==="
-uname -r
+`mod_meeting_report.lua` saves one folder per meeting to `~/.jitsi-meet-cfg/meetings/<date>/<room>/` (IST) when the room closes:
+
+- `chat.txt` :: group chat transcript.
+- `attendance.csv` :: name, join, leave, duration_min, talk_min.
+- `recording.mp4` + `metadata.json` :: only if the meeting was recorded.
+
+Turned on in `.env` via `XMPP_MUC_MODULES=token_affiliation,meeting_report` and `XMPP_BREAKOUT_MUC_MODULES=meeting_report` (breakout rooms get their own folder). Full install, rollback and troubleshooting steps are in `MEETING-REPORT.md`.
+
+Live transcription (Jigasi + Vosk) was tried and dropped: poor accuracy, too heavy for this host. For notes, record and run Whisper on the mp4 afterwards.
+
+## Updating
+
+Work in `/root/docker-jitsi-meet` on the server.
+
+- After `.env` changes: `docker compose up -d --force-recreate`.
+- Etherpad not loading? reconnect caddy to the jitsi network:
+  `docker network connect docker-jitsi-meet_meet.jitsi caddy-caddy-1`.
+- Testing a `config.js` change: `docker compose restart web`.
+- Changed a prosody env or volume: recreate it (`docker compose up -d prosody`), a plain `restart` will not reload the module.
+
+## After a Linode reboot: SSH lockout
+
+Symptom: host unreachable over SSH after a reboot, but LISH works and Jitsi/Caddy still serve traffic. Cause: the host `iptables` policy is `INPUT DROP` but the allow-rules were never persisted, so they vanish on reboot (container ports survive via Docker's own chains, only host SSH breaks).
+
+Recover from LISH:
+
+```
+sudo iptables -A INPUT -i lo -j ACCEPT
+sudo iptables -A INPUT -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+sudo iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+```
+
+Fix for good: `apt install iptables-persistent && netfilter-persistent save`, or move inbound filtering to a Linode Cloud Firewall (allow 22, 80, 443, 10000/udp) and set the host INPUT policy back to ACCEPT.
+
+## TODO
+
+- [ ] Force the fossunited team as moderator for everyone. Right now whoever
+  joins first becomes mod; we want the team to be mod by default (likely needs
+  auth or the JWT token above).
+
+## Changes
+
+** Oct 2026**
+
+- Did latest pull and updated jitsi to stable-11031
+
+**Jul 2026**
+
+- Added the custom Lua meeting-report (chat + attendance per meeting).
+- Tried Vosk transcription, dropped it (poor accuracy). Record + Whisper instead.
+
+**Apr 2026**
+
+- Bundled etherpad into jitsi and persisted its files with a volume.
+- Set max resolution to 1080.
+- Disabled adaptive mode so screen share stops dropping to save bandwidth.
+
+## Server specs
+
+```
+uname -a
+Linux localhost 6.1.0-37-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.1.140-1 (2025-05-22) x86_64 GNU/Linux
 ```
 
 ```text
 === CPU ===
-CPU(s):                                  4
-On-line CPU(s) list:                     0-3
-Model name:                              AMD EPYC 7713 64-Core Processor
-BIOS Model name:                         pc-q35-7.2  CPU @ 2.0GHz
-Thread(s) per core:                      1
-Core(s) per socket:                      4
-Socket(s):                               1
-NUMA node0 CPU(s):                       0-3
+CPU(s): 4   Model name: AMD EPYC 7713 64-Core Processor   (1 thread/core, 1 socket)
 
 === RAM ===
-               total        used        free      shared  buff/cache   available
-Mem:           7.8Gi       2.1Gi       2.9Gi       2.3Mi       3.0Gi       5.7Gi
-Swap:          511Mi       103Mi       408Mi
+Mem: 7.8Gi total   Swap: 511Mi
 
 === Disk ===
-Filesystem      Size  Used Avail Use% Mounted on
-/dev/sda        157G   16G  134G  11% /
+/dev/sda  157G total, 134G free
 
 === OS ===
-PRETTY_NAME="Debian GNU/Linux 12 (bookworm)"
-
-=== Kernel ===
-6.1.0-37-amd64
+Debian GNU/Linux 12 (bookworm), kernel 6.1.0-37-amd64
 ```
-
-# Jitsi Meet on Docker
-
-[Jitsi](https://jitsi.org/) is a set of Open Source projects that allows you to easily build and deploy secure videoconferencing solutions.
-
-[Jitsi Meet](https://jitsi.org/jitsi-meet/) is a fully encrypted, 100% Open Source video conferencing solution that you can use all day, every day, for free — with no account needed.
-
-This repository contains the necessary tools to run a Jitsi Meet stack on [Docker](https://www.docker.com) using [Docker Compose](https://docs.docker.com/compose/).
-
-- The docker setup is directly from: https://github.com/jitsi/docker-jitsi-meet
-
-Only config changes to `.env` is made, thats it.
-
-- `config.js`: jitsi frontend Web configuration
-  - ~/.jitsi-meet-cfg/web/config.js
-
-- `docker-compose.yml` is same as default
-  just that etherpad is included to bundle with jitsi
-  
-- `.env` file is configured as required.
-
-## Updating
-
-- Modify `.env` file and run: `docker compose up -d --force-recreate` in that dir (~/docker-jitsi-meet)
-- `docker network connect docker-jitsi-meet_meet.jitsi caddy-caddy-1` (if caddy network is not synced with jitsi for etherpad to work)
-- `docker compose -f ~/docker-jitsi-meet/docker-compose.yml restart web` (restart web if testing frontned changes via config.js)
-
-
-## TODOs
-
-- [ ] Make fossunited team moderator for all. Any guest who joins early becomes mod, we need Mod for team forcefully (may need Auth or some weird setup)
-
-## Changes
-
-### April 2026
-- Connect etherpad to jitsi to make it usable
-- Set max resolution to 1080
-- Removed adaptive mode to avoid screen share getting turned off to save bandwidth
-- Make etherpad files persist by mounting volume
