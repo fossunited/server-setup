@@ -1,3 +1,7 @@
+## Note: Service has been shutdown
+
+After 2025 we did not make use of this, and thus was shutdown and this stays as legacy document.
+
 ## LibreChat
 
 LibreChat is a self-hosted solution designed for organization members to browse essential information using AI providers. The service is powered by the OpenAI API, with API usage facilitated through periodically purchased credits.

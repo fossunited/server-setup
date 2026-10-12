@@ -1,3 +1,7 @@
+## Note: Service has been shutdown
+
+After 2025 we did not make use of this, and thus was shutdown and this stays as legacy document.
+
 ## Server Details 
 
 - Running on a 4GB Ram Linode
