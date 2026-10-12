@@ -1,0 +1,68 @@
+# ==============================================================================
+# IndiaFOSS 2026 — MediaMTX Origin Configuration
+# MediaMTX v1.11.3
+# ==============================================================================
+
+# Global logging
+logLevel: info
+logDestinations: [stdout]
+
+# Global authentication
+authMethod: internal
+authInternalUsers:
+  # Anyone may read. Viewers only reach HLS through the Caddy edge.
+  - user: any
+    pass:
+    ips: []
+    permissions:
+      - action: read
+  # Only the controller may publish streams or use the REST API (which can
+  # also rewrite this config at runtime). 172.30.40.10 is the controller's
+  # fixed address in deploy/docker-compose.yml; keep the two in sync.
+  - user: any
+    pass:
+    ips: ['172.30.40.10']
+    permissions:
+      - action: publish
+      - action: api
+
+# REST API for health watchdog and viewer telemetry (controller only, see above)
+api: yes
+apiAddress: :9997
+
+# RTSP Server — Ingestion point from FFmpeg copy-only remuxer
+rtsp: yes
+rtspAddress: :8554
+rtspTransports: [tcp]
+
+# RTMP and WebRTC disabled to minimize attack surface and memory
+rtmp: no
+webrtc: no
+srt: no
+
+# Performance & Buffer Tuning
+writeQueueSize: 4096
+readTimeout: 20s
+writeTimeout: 20s
+
+# HLS Server — Delivery origin behind the Caddy edge
+hls: yes
+hlsAddress: :8888
+hlsAllowOrigin: "*"
+
+# Standard HLS with MPEG-TS segments: the most compatible and robust variant
+# (native iOS Safari and hls.js alike). Low-latency HLS was dropped on purpose:
+# YouTube already adds 5-20s of delay, and LL-HLS stalled more and warned about iOS.
+hlsVariant: mpegts
+hlsAlwaysRemux: true
+hlsSegmentCount: 7
+# Minimum segment length; segments are cut on keyframes (set OBS keyframe interval to 2s)
+hlsSegmentDuration: 2s
+
+# Keep segments strictly in RAM, no disk storage
+hlsDirectory: ""
+
+# Media Paths
+paths:
+  all:
+    record: false

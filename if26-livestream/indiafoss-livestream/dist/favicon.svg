@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- IndiaFOSS mark: the logo's outline box with blocky "IF" -->
+  <rect width="32" height="32" rx="5" fill="#0b0d12"/>
+  <rect x="5" y="5" width="22" height="22" fill="none" stroke="#fff" stroke-width="2"/>
+  <path fill="#fff" d="M9 9h3v14H9zM15 9h8v3h-5v3h4v3h-4v5h-3z"/>
+</svg>

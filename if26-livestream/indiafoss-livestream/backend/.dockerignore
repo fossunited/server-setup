@@ -1,0 +1,5 @@
+# Keep local environments and secrets out of the controller image
+.venv/
+.env
+**/__pycache__/
+*.pyc
