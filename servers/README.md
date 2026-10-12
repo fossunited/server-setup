@@ -16,6 +16,7 @@ Services Running:
 - nginx
 - frape-bench
 - livecode
+- caddy
 
 Important Locations:
 - /home/fossunited/frappe-bench
