@@ -1,0 +1,10 @@
+# Standalone Caddy for the libredesk Linode
+#
+# Change the domain below before first run, then point its DNS A record at
+# this Linode's IP.
+
+support.fossunited.org {
+    reverse_proxy app:9000 {
+        header_up X-Client-IP {remote_host}
+    }
+}
