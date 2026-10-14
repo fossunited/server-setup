@@ -1,5 +1,9 @@
 # Jitsi Meet (https://meet.fossunited.org)
 
+Docker repo: https://github.com/jitsi/docker-jitsi-meet
+Guide: https://github.com/jitsi/handbook/blob/master/docs/devops-guide/docker.md
+Images: https://ghcr.io/jitsi/
+
 Stock [docker-jitsi-meet](https://github.com/jitsi/docker-jitsi-meet). We only change `.env` and `config.js`, everything else is upstream default. Etherpad is bundled in for meeting notes. Runs on the meet host (specs at the bottom).
 
 On the server the dir is in `/root/docker-jitsi-meet` and config lives in `~/.jitsi-meet-cfg`.
