@@ -1,0 +1,55 @@
+# Miniflux RSS reader. Runs on the vaultwarden Linode (host nginx, not caddy).
+# Team-only: no public signup. Admin creates each user in the UI
+# (Settings -> Users). Local username/password auth; no OAuth.
+# Published on 127.0.0.1:8092 (8091 taken by umami); nginx proxies to it.
+# DB on a private "internal" network, not published to the host.
+
+services:
+  miniflux:
+    image: miniflux/miniflux:latest
+    container_name: miniflux
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8092:8080"
+    depends_on:
+      miniflux-db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://miniflux:${DB_PASSWORD}@miniflux-db/miniflux?sslmode=disable
+      RUN_MIGRATIONS: "1"
+      BASE_URL: https://reader.fossunited.org
+      # First-boot admin only. Safe to leave; ignored once the user exists.
+      CREATE_ADMIN: "1"
+      ADMIN_USERNAME: ${ADMIN_USERNAME}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+    networks:
+      - internal
+    healthcheck:
+      # built-in healthcheck shipped in the image
+      test: ["CMD", "/usr/bin/miniflux", "-healthcheck", "auto"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  miniflux-db:
+    image: postgres:17-alpine
+    container_name: miniflux-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: miniflux
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: miniflux
+    volumes:
+      - ./db-data:/var/lib/postgresql/data
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "miniflux"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+networks:
+  internal:
