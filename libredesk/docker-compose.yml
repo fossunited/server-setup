@@ -1,0 +1,80 @@
+# Libredesk :: self-hosted support desk (email inbox + live chat + help center).
+#
+# app/db/redis mirror upstream's own docker-compose.yml (verified against
+# github.com/abhinavxd/libredesk/main/docker-compose.yml) -- config is passed
+# via a mounted config.toml
+
+services:
+  app:
+    image: libredesk/libredesk:latest
+    container_name: libredesk_app
+    restart: unless-stopped
+    environment:
+      # Sets the System user password on first install only. Change later with:
+      # docker exec -it libredesk_app ./libredesk --set-system-user-password
+      LIBREDESK_SYSTEM_USER_PASSWORD: ${LIBREDESK_SYSTEM_USER_PASSWORD:-}
+    networks:
+      - libredesk
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - ./uploads:/libredesk/uploads:rw
+      - ./config.toml:/libredesk/config.toml
+    command: [sh, -c, "./libredesk --install --idempotent-install --yes --config /libredesk/config.toml && ./libredesk --upgrade --yes --config /libredesk/config.toml && ./libredesk --config /libredesk/config.toml"]
+
+  db:
+    image: postgres:17-alpine
+    container_name: libredesk_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: libredesk
+      # Must match [db].password in config.toml -- they are two separate files,
+      # kept in sync manually (same as upstream's own sample setup).
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: libredesk
+    ports:
+      # Loopback only -- lets you psql/pg_dump from the host directly.
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - ./db-data:/var/lib/postgresql/data
+    networks:
+      - libredesk
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U libredesk -d libredesk"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+
+  redis:
+    image: redis:7-alpine
+    container_name: libredesk_redis
+    restart: unless-stopped
+    ports:
+      # Loopback only -- lets you redis-cli in from the host directly.
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - ./redis-data:/data
+    networks:
+      - libredesk
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: libredesk_caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./caddy-data:/data
+      - ./caddy-config:/config
+    networks:
+      - libredesk
+    depends_on:
+      - app
+
+networks:
+  libredesk:
