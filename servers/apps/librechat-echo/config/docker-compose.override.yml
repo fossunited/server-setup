@@ -1,4 +1,0 @@
-services:
-  api:
-    volumes:
-      - ./librechat.yaml:/app/librechat.yaml

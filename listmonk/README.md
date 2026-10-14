@@ -28,3 +28,10 @@ Database: Postgresql
 - `systemctl start listmonk`
 
 Recent DB Password change happened on 28 Aug, 2024.
+
+## Changes
+
+Check releases: https://github.com/knadh/listmonk/releases/
+
+## April 2026
+- Updated Listmonk: `6.0.0 -> 6.1.0` and to 6.2.0. Excited for v7 leap.

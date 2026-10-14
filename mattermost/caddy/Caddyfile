@@ -1,0 +1,5 @@
+# prev there was acme_dns, but for simplified I removed it.
+
+mattermost.fossunited.org {
+	reverse_proxy localhost:8065
+}
