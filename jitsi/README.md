@@ -1,5 +1,7 @@
 # Jitsi Meet (https://meet.fossunited.org)
 
+**Using the service (hosts, partner orgs): [USER-GUIDE.md](USER-GUIDE.md).** This README is the operator / devops notes.
+
 Docker repo: https://github.com/jitsi/docker-jitsi-meet
 Guide: https://github.com/jitsi/handbook/blob/master/docs/devops-guide/docker.md
 Images: https://ghcr.io/jitsi/
@@ -28,6 +30,10 @@ On the server the dir is in `/root/docker-jitsi-meet` and config lives in `~/.ji
 Turned on in `.env` via `XMPP_MUC_MODULES=token_affiliation,meeting_report` and `XMPP_BREAKOUT_MUC_MODULES=meeting_report` (breakout rooms get their own folder). Full install, rollback and troubleshooting steps are in `MEETING-REPORT.md`.
 
 Live transcription (Jigasi + Vosk) was tried and dropped: poor accuracy, too heavy for this host. For notes, record and run Whisper on the mp4 afterwards.
+
+## Feature set
+
+On now (`.env`): JWT moderator auth + guest join, require display name, recording + live streaming, Etherpad notes, Excalidraw whiteboard, per-meeting chat + attendance report, "End meeting for all" disabled. Breakout rooms, polls, reactions, raise-hand, tile view, virtual backgrounds, noise suppression are upstream defaults and on.
 
 ## Updating
 
