@@ -1,0 +1,116 @@
+# ==============================================================================
+# IndiaFOSS 2026 — Development Docker Compose
+# Includes live bind-mounts and hot-reloading for rapid local iteration.
+# ==============================================================================
+
+networks:
+  livestream-net:
+    driver: bridge
+    ipam:
+      config:
+        # Fixed subnet so the controller gets a stable address (see below) and the host
+        # side of the bridge is always 172.30.40.1 (where the WARP forwarder listens).
+        - subnet: 172.30.40.0/24
+          gateway: 172.30.40.1
+
+services:
+  controller:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    container_name: indiafoss-controller
+    restart: unless-stopped
+    networks:
+      livestream-net:
+        # mediamtx.yml only lets this address publish streams or use the
+        # MediaMTX API; keep the two in sync.
+        ipv4_address: 172.30.40.10
+    # Internal ports are bound to localhost only: reachable over SSH on the
+    # host for the runbook's curl commands, never from the internet. Public
+    # traffic goes through the edge.
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8000
+      - RELOAD=true
+      - MEDIAMTX_RTSP_BASE=rtsp://mediamtx:8554
+      - MEDIAMTX_API_URL=http://mediamtx:9997
+      - MEDIAMTX_HLS_URL=http://mediamtx:8888
+      - CONFIG_PATH=/app/backend/config/streams.yaml
+      - STATIC_DIR=/app/dist
+      - AUTO_START_STREAMS=0
+      - DUMMY_MODE=0
+      # Used only if the file exists (YouTube bot check workaround, see deploy/secrets/README.md)
+      - STREAMLINK_COOKIES_FILE=/app/secrets/youtube-cookies.txt
+      # Proxy for all YouTube traffic (Cloudflare WARP on the server, see scripts/setup-warp.sh);
+      # empty = direct. Set in deploy/.env: STREAMLINK_PROXY=socks5h://172.30.40.1:40000
+      - STREAMLINK_PROXY=${STREAMLINK_PROXY:-}
+      - FALLBACK_AFTER_SECONDS=${FALLBACK_AFTER_SECONDS:-300}
+      - FALLBACK_RETURN_SECONDS=${FALLBACK_RETURN_SECONDS:-60}
+      # Anonymous viewer/player telemetry as JSON lines (no IPs), for the post-event report
+      - TELEMETRY_DIR=/app/telemetry
+      # Admin login, checked by the controller for the edge (lockout after wrong passwords)
+      - ADMIN_USER=${ADMIN_USER:-operator}
+      - ADMIN_PASSWORD_HASH=${ADMIN_PASSWORD_HASH:?set ADMIN_PASSWORD_HASH in deploy/.env - see deploy/.env.example}
+    volumes:
+      # Bind-mount backend source code (restart the controller to pick up changes)
+      - ../backend:/app/backend
+      # Bind-mount built frontend
+      - ../dist:/app/dist:ro
+      - ./secrets:/app/secrets:ro
+      - ../telemetry:/app/telemetry
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f -I http://localhost:8000/healthz || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    depends_on:
+      - mediamtx
+
+  mediamtx:
+    image: bluenviron/mediamtx:1.11.3
+    container_name: indiafoss-mediamtx
+    restart: unless-stopped
+    networks:
+      - livestream-net
+    ports:
+      - "127.0.0.1:8554:8554"  # RTSP TCP (reads only from the host)
+      - "127.0.0.1:8888:8888"  # Low-latency HLS
+      # REST API (:9997) is not published; it only accepts the controller.
+    volumes:
+      - ./mediamtx.yml:/mediamtx.yml:ro
+
+  edge:
+    image: caddy:2.9.1-alpine
+    container_name: indiafoss-edge
+    restart: unless-stopped
+    networks:
+      - livestream-net
+    ports:
+      - "${EDGE_PORT:-8080}:80"
+    environment:
+      # Set DOMAIN in deploy/.env (e.g. live.example.org) for automatic HTTPS
+      - DOMAIN=${DOMAIN:-:80}
+      # Where the admin lives; the Caddyfile protects this path (see deploy/.env.example)
+      - ADMIN_PATH=${ADMIN_PATH:-/admin}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ../dist:/app/dist:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    healthcheck:
+      # Caddy's admin API: plain HTTP on localhost, unaffected by the HTTPS redirect once DOMAIN is set
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:2019/config/ || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 3s
+    depends_on:
+      - controller
+      - mediamtx
+
+volumes:
+  caddy_data:
+  caddy_config:

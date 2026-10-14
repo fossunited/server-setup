@@ -1,0 +1,115 @@
+/* ============================================================================
+   GLIDE BROWSER THEME -- userContent.css
+
+/* Forces text selection color on every page, regardless of whether the
+   page is native-dark or Dark Reader is filtering it. Works because
+   userContent.css is a User-origin stylesheet: an !important declaration
+   here outranks the page's own !important, per CSS cascade rules -- Dark
+   Reader can't touch pages it thinks are already dark, but this isn't
+   Dark Reader, so it applies unconditionally. */
+
+/* Mirrors userChrome.css's modus-vivendi :root block. Can't share it
+   directly -- this file styles page content documents, userChrome.css
+   styles the browser chrome document, two separate cascade trees with
+   no custom-property inheritance between them. Keep these two palettes
+   in sync by hand when retinting. */
+:root {
+	--m-bg-main: #000000;
+	--m-bg-dim: #0a0f0a;
+	--m-bg-active: #111c17;
+	--m-fg-main: #ffffff;
+	--m-heading-peach: #fab387;
+	--m-cursor-teal: #5fd7af;
+	--m-completion-teal: #248f6c;
+}
+
+* {
+    font-family: inherit, "Symbols Nerd Font Mono" !important;
+}
+
+/* Force resizable height on textareas and rich-text editors -- many sites
+   lock these with resize: none / a fixed height, this overrides both. */
+textarea,
+[contenteditable="true"],
+[contenteditable=""],
+[role="textbox"] {
+	resize: vertical !important;
+	overflow: auto !important;
+	max-height: none !important;
+	/* min-height: 4em !important; */
+}
+
+/* Code-editor libraries (Ace, CodeMirror, Monaco) render into their own
+   div, the real textarea/contenteditable is a 1px hidden input-capture
+   proxy -- the rule above never reaches the visible box. Named per
+   library since there's no generic selector for "custom editor surface". */
+.ace-editor-target,
+.ace_editor,
+.CodeMirror,
+.cm-editor,
+.monaco-editor {
+	resize: vertical !important;
+	overflow: auto !important;
+}
+
+*::selection {
+	background-color: var(--m-completion-teal) !important;
+	color: var(--m-fg-main) !important;
+}
+*::-moz-selection {
+	background-color: var(--m-completion-teal) !important;
+	color: var(--m-fg-main) !important;
+}
+
+/* Scrollbar to match the accent, same as Emacs cursor/completion color */
+* {
+	scrollbar-color: var(--m-cursor-teal) var(--m-bg-dim) !important;
+	scrollbar-width: thin;
+}
+
+/* Caret blink color -- mirrors your Emacs cursor being the signature teal */
+* {
+	caret-color: var(--m-cursor-teal) !important;
+}
+
+/* Focus ring, matches focus-outline-color in userChrome.css */
+:focus-visible {
+	outline-color: var(--m-cursor-teal) !important;
+}
+
+/* In-page find / fragment-scroll highlight */
+mark, ::target-text {
+	background-color: var(--m-heading-peach) !important;
+	color: var(--m-bg-main) !important;
+}
+
+/* Kill the white flash on blank/new tab before content paints */
+@-moz-document url(about:blank) {
+	html, body { background-color: var(--m-bg-main) !important; }
+}
+
+/* about:preferences / about:addons / about:config -- flat modus colors.
+   (about:newtab untouched: Tabliss replaces that page, these selectors
+   would never render.) */
+@-moz-document url-prefix(about:preferences), url-prefix(about:addons), url-prefix(about:config) {
+	body, .main-content, #dialogOverlay-1 {
+		background-color: var(--m-bg-dim) !important;
+		color: var(--m-fg-main) !important;
+	}
+	description, label, .indent, groupbox > caption {
+		color: var(--m-fg-main) !important;
+	}
+	.subcategory, groupbox, .info-box-container {
+		background-color: var(--m-bg-active) !important;
+	}
+	input, .textbox-input, #textbox-search {
+		background-color: var(--m-bg-active) !important;
+		color: var(--m-fg-main) !important;
+		border-color: var(--m-completion-teal) !important;
+		caret-color: var(--m-cursor-teal) !important;
+	}
+	tree > treechildren::-moz-tree-row(selected),
+	richlistitem[selected] {
+		background-color: var(--m-completion-teal) !important;
+	}
+}

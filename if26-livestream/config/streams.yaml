@@ -1,0 +1,165 @@
+streams:
+- id: '1'
+  slug: audi-1
+  index: 0
+  streamNumber: STREAM 01
+  title: Audi 1
+  devroom: GENERAL TRACK
+  partner: null
+  time: ''
+  thumbnail: /assets/sessions/day-1-audi-1-morning.jpg
+  accentColor: '#9333ea'
+  route: /audi-1
+  sourceUrl: https://www.youtube.com/watch?v=boNCSaCb138
+  quality: 1080p
+  order: 1
+  enabled: true
+  startsAt: '2026-09-26T09:30:00+05:30'
+  desiredState: STOPPED
+  playbackMode: auto
+  sessions:
+  - slug: day-1-audi-1-morning
+    title: Day 1 | General Track - Audi 1 (MORNING SESSION)
+    youtubeVideoId: 2KjUZ5HFSeI
+    startsAt: '2026-09-26T09:30:00+05:30'
+    thumbnail: /assets/sessions/day-1-audi-1-morning.jpg
+  - slug: day-1-audi-1-afternoon
+    title: Day 1 | General Track - Audi 1 (AFTERNOON SESSION)
+    youtubeVideoId: 16jUf3fLtsw
+    startsAt: '2026-09-26T14:30:00+05:30'
+    thumbnail: /assets/sessions/day-1-audi-1-afternoon.jpg
+  - slug: day-2-audi-1-morning
+    title: Day 2 | General Track - Audi 1 (MORNING SESSION)
+    youtubeVideoId: bXMjp1JOzPQ
+    startsAt: '2026-09-27T09:45:00+05:30'
+    thumbnail: /assets/sessions/day-2-audi-1-morning.jpg
+  - slug: day-2-audi-1-afternoon
+    title: Day 2 | General Track - Audi 1 (Afternoon SESSION)
+    youtubeVideoId: boNCSaCb138
+    startsAt: '2026-09-27T14:30:00+05:30'
+    thumbnail: /assets/sessions/day-2-audi-1-afternoon.jpg
+  currentSession: day-2-audi-1-afternoon
+  autoAdvance: true
+- id: '2'
+  slug: audi-2
+  index: 1
+  streamNumber: STREAM 02
+  title: Audi 2
+  devroom: GENERAL TRACK
+  partner: null
+  time: ''
+  thumbnail: /assets/sessions/day-1-audi-2-morning.jpg
+  accentColor: '#e05a47'
+  route: /audi-2
+  sourceUrl: https://www.youtube.com/watch?v=7tRJMznIMUA
+  quality: 1080p
+  order: 2
+  enabled: true
+  startsAt: '2026-09-26T09:45:00+05:30'
+  desiredState: STOPPED
+  playbackMode: auto
+  sessions:
+  - slug: day-1-audi-2-morning
+    title: Day 1 | General Track - Audi 2 (MORNING SESSION)
+    youtubeVideoId: G4s4RGAPvLY
+    startsAt: '2026-09-26T09:45:00+05:30'
+    thumbnail: /assets/sessions/day-1-audi-2-morning.jpg
+  - slug: day-1-audi-2-afternoon
+    title: Day 1 | General Track - Audi 2 (AFTERNOON SESSION)
+    youtubeVideoId: 8b-nRIjQEeY
+    startsAt: '2026-09-26T14:00:00+05:30'
+    thumbnail: /assets/sessions/day-1-audi-2-afternoon.jpg
+  - slug: day-2-audi-2-morning
+    title: Day 2 | General Track - Audi 2 (MORNING SESSION)
+    youtubeVideoId: WCgvezvln2E
+    startsAt: '2026-09-27T09:45:00+05:30'
+    thumbnail: /assets/sessions/day-2-audi-2-morning.jpg
+  - slug: day-2-audi-2-afternoon
+    title: Day 2 | General Track - Audi 2 (AFTERNOON SESSION)
+    youtubeVideoId: 7tRJMznIMUA
+    startsAt: '2026-09-27T14:00:00+05:30'
+    thumbnail: /assets/sessions/day-2-audi-2-afternoon.jpg
+  currentSession: day-2-audi-2-afternoon
+  autoAdvance: true
+- id: '3'
+  slug: devroom-1
+  index: 2
+  streamNumber: STREAM 03
+  title: Devroom 1
+  devroom: DEVROOM
+  partner: null
+  time: ''
+  thumbnail: /assets/sessions/open-hardware.jpg
+  accentColor: '#3b82f6'
+  route: /devroom-1
+  sourceUrl: https://www.youtube.com/watch?v=7ChxYYjlvpc
+  quality: 1080p
+  order: 3
+  enabled: true
+  startsAt: '2026-09-26T10:00:00+05:30'
+  desiredState: STOPPED
+  playbackMode: auto
+  sessions:
+  - slug: open-hardware
+    title: 'Devroom : Open Hardware'
+    youtubeVideoId: GOL_18fGMUI
+    startsAt: '2026-09-26T10:00:00+05:30'
+    thumbnail: /assets/sessions/open-hardware.jpg
+  - slug: compilers
+    title: 'Devroom : Compilers,Programming Languages and Systems'
+    youtubeVideoId: rb1ZALRGFjw
+    startsAt: '2026-09-26T14:00:00+05:30'
+    thumbnail: /assets/sessions/compilers.jpg
+  - slug: open-design
+    title: 'Devroom : Open Design'
+    youtubeVideoId: 2nAeRMiQU_I
+    startsAt: '2026-09-27T10:00:00+05:30'
+    thumbnail: /assets/sessions/open-design.jpg
+  - slug: cloud-devops
+    title: 'Devroom : Cloud & DevOps'
+    youtubeVideoId: 7ChxYYjlvpc
+    startsAt: '2026-09-27T14:00:00+05:30'
+    thumbnail: /assets/sessions/cloud-devops.jpg
+  currentSession: cloud-devops
+  autoAdvance: true
+- id: '4'
+  slug: devroom-2
+  index: 3
+  streamNumber: STREAM 04
+  title: Devroom 2
+  devroom: DEVROOM
+  partner: null
+  time: ''
+  thumbnail: /assets/sessions/documentation-tech-writing.jpg
+  accentColor: '#10b981'
+  route: /devroom-2
+  sourceUrl: https://www.youtube.com/watch?v=p_Bc-EZCr1Q
+  quality: 1080p
+  order: 4
+  enabled: true
+  startsAt: '2026-09-26T10:00:00+05:30'
+  desiredState: STOPPED
+  playbackMode: auto
+  sessions:
+  - slug: documentation-tech-writing
+    title: 'Devroom : Documentation & Tech Writing'
+    youtubeVideoId: KNKAi9dfZxA
+    startsAt: '2026-09-26T10:00:00+05:30'
+    thumbnail: /assets/sessions/documentation-tech-writing.jpg
+  - slug: aosp
+    title: 'Devroom : Android Open Source Project (AOSP)'
+    youtubeVideoId: te8gj_1vIDY
+    startsAt: '2026-09-26T14:00:00+05:30'
+    thumbnail: /assets/sessions/aosp.jpg
+  - slug: security
+    title: 'Devroom : Security'
+    youtubeVideoId: OJHBVJ4kzBw
+    startsAt: '2026-09-27T10:00:00+05:30'
+    thumbnail: /assets/sessions/security.jpg
+  - slug: rtos
+    title: 'Devroom : Real Time Operating Systems (RTOS)'
+    youtubeVideoId: p_Bc-EZCr1Q
+    startsAt: '2026-09-27T14:00:00+05:30'
+    thumbnail: /assets/sessions/rtos.jpg
+  currentSession: rtos
+  autoAdvance: true

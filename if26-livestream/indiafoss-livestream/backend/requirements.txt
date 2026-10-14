@@ -1,0 +1,15 @@
+# IndiaFOSS 2026 Livestream Operator API & Pipeline Supervisor
+# Pinned production dependencies for reproducibility
+
+fastapi==0.115.11
+uvicorn[standard]==0.34.0
+streamlink==8.6.1
+# SOCKS support for the YouTube playability probe through the WARP proxy
+requests==2.34.2
+PySocks==1.7.1
+pydantic==2.10.6
+pyyaml==6.0.2
+httpx==0.28.1
+psutil==7.0.0
+# Operator login check (see app/auth.py)
+bcrypt==4.2.1

@@ -1,0 +1,112 @@
+# ==============================================================================
+# IndiaFOSS 2026 — Caddy Edge Reverse Proxy Configuration
+# Caddy v2.9.1
+# ==============================================================================
+
+{$DOMAIN::80} {
+    # Selective compression: compress text/code/json, skip already-compressed video & images
+    @compressible {
+        not path *.mp4 *.m4s *.ts *.png *.jpg *.jpeg *.webp *.avif
+    }
+    encode @compressible gzip zstd
+
+    # Root directory for pre-built Preact SPA
+    root * /app/dist
+
+    # Security Headers
+    header {
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "SAMEORIGIN"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        # Ignored by browsers over plain HTTP; enforces HTTPS once DOMAIN is set
+        Strict-Transport-Security "max-age=31536000"
+    }
+
+    # Operator access control on the admin (at ADMIN_PATH, not /admin), host diagnostics,
+    # the operator event stream and every state-changing API call. Viewer pages, stream
+    # listing, HLS media and probes stay public. POST /api/telemetry is the viewers'
+    # anonymous player report, so it stays public (size-capped below).
+    # The controller checks the login (HTTP basic auth, credentials from deploy/.env) and
+    # locks an address out after repeated wrong passwords; see backend/app/auth.py.
+    @operator expression `path('{$ADMIN_PATH:/admin}', '{$ADMIN_PATH:/admin}/*', '/api/system/*', '/api/events') || (path('/api/*') && !method('GET', 'HEAD') && !path('/api/telemetry'))`
+    forward_auth @operator controller:8000 {
+        uri /api/auth/check
+    }
+
+    # Browsers resend cached basic-auth credentials on cross-site requests, so
+    # refuse state-changing API calls that the browser marks as cross-site.
+    @crossSiteWrite {
+        path /api/*
+        not method GET HEAD
+        header Sec-Fetch-Site cross-site
+        header Sec-Fetch-Site same-site
+    }
+    handle @crossSiteWrite {
+        respond "Cross-site operator requests are not allowed" 403
+    }
+
+    # HLS Media Origin Proxy
+    @hls path /live/*
+    handle @hls {
+        header {
+            Access-Control-Allow-Origin "*"
+            Access-Control-Allow-Methods "GET, HEAD, OPTIONS"
+            Access-Control-Allow-Headers "*"
+        }
+
+        # Non-cacheable live manifests
+        @playlists path *.m3u8
+        header @playlists Cache-Control "no-cache, no-store, must-revalidate"
+
+        # Immutable media segment caching
+        @segments path *.mp4 *.m4s *.ts
+        header @segments Cache-Control "public, max-age=60, immutable"
+
+        reverse_proxy mediamtx:8888 {
+            header_up Host {upstream_hostport}
+            flush_interval -1
+        }
+    }
+
+    # Controller API & Lifecycle Endpoints
+    @api path /api/* /healthz /readyz
+    handle @api {
+        # Anonymous player reports are small; refuse anything bigger before it reaches the controller
+        @telemetry path /api/telemetry
+        request_body @telemetry {
+            max_size 8KB
+        }
+
+        # Streaming SSE notifications must bypass proxy buffering
+        @sse path /api/events
+        handle @sse {
+            reverse_proxy controller:8000 {
+                flush_interval -1
+            }
+        }
+
+        reverse_proxy controller:8000
+    }
+
+    # Built JS/CSS carry a content hash in their name: cache forever
+    @bundles path_regexp bundles ^/assets/index-[A-Za-z0-9_-]+\.(js|css)$
+    handle @bundles {
+        header Cache-Control "public, max-age=31536000, immutable"
+        file_server
+    }
+
+    # Logos and session artwork keep their names when replaced (e.g. HQ thumbnails): short cache
+    @assets path /assets/*
+    handle @assets {
+        header Cache-Control "public, max-age=300"
+        file_server
+    }
+
+    # Preact Single Page Application Routing. The page itself is always revalidated, so a
+    # browser never keeps an old copy that points at bundles a deploy has removed.
+    handle {
+        header Cache-Control "no-cache"
+        try_files {path} /index.html
+        file_server
+    }
+}
