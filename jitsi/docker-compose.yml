@@ -3,10 +3,17 @@ version: '3.5'
 services:
     # Frontend
     web:
-        image: jitsi/web:${JITSI_IMAGE_VERSION:-stable-10184}
+        image: ghcr.io/jitsi/web:${JITSI_IMAGE_VERSION:-stable-10184}
         restart: ${RESTART_POLICY:-unless-stopped}
+        # Newer images use s6-overlay v3, which must exec init scripts from /run.
+        # This host's default container /run is mounted noexec, so give web an
+        # exec tmpfs /run or it crash-loops (nginx starts then s6 tears down).
+        tmpfs:
+            - /run:exec,mode=755
         ports:
-            - '${HTTP_PORT}:80'
+            # Newer non-root web image runs nginx as uid 1000 and listens on
+            # 8000 inside the container (it cannot bind :80). Map to 8000.
+            - '${HTTP_PORT}:8000'
             #- '${HTTPS_PORT}:443'
         volumes:
             - ${CONFIG}/web:/config:Z
@@ -192,7 +199,10 @@ services:
 
     # XMPP server
     prosody:
-        image: jitsi/prosody:${JITSI_IMAGE_VERSION:-stable-10184}
+        image: ghcr.io/jitsi/prosody:${JITSI_IMAGE_VERSION:-stable-10184}
+        # s6-overlay v3 needs an exec /run (host default is noexec). See web.
+        tmpfs:
+            - /run:exec,mode=755
         restart: ${RESTART_POLICY:-unless-stopped}
         expose:
             - '${XMPP_PORT:-5222}'
@@ -343,7 +353,10 @@ services:
 
     # Focus component
     jicofo:
-        image: jitsi/jicofo:${JITSI_IMAGE_VERSION:-stable-10184}
+        image: ghcr.io/jitsi/jicofo:${JITSI_IMAGE_VERSION:-stable-10184}
+        # s6-overlay v3 needs an exec /run (host default is noexec). See web.
+        tmpfs:
+            - /run:exec,mode=755
         restart: ${RESTART_POLICY:-unless-stopped}
         ports:
             - '127.0.0.1:${JICOFO_REST_PORT:-8888}:8888'
@@ -434,7 +447,10 @@ services:
 
     # Video bridge
     jvb:
-        image: jitsi/jvb:${JITSI_IMAGE_VERSION:-stable-10184}
+        image: ghcr.io/jitsi/jvb:${JITSI_IMAGE_VERSION:-stable-10184}
+        # s6-overlay v3 needs an exec /run (host default is noexec). See web.
+        tmpfs:
+            - /run:exec,mode=755
         restart: ${RESTART_POLICY:-unless-stopped}
         ports:
             - '${JVB_PORT:-10000}:${JVB_PORT:-10000}/udp'
@@ -516,7 +532,10 @@ services:
                     - etherpad.meet.jitsi
     
     jibri:
-        image: jitsi/jibri:${JITSI_IMAGE_VERSION:-stable-10184}
+        image: ghcr.io/jitsi/jibri:${JITSI_IMAGE_VERSION:-stable-10184}
+        # s6-overlay v3 needs an exec /run (host default is noexec). See web.
+        tmpfs:
+            - /run:exec,mode=755
         restart: ${RESTART_POLICY:-unless-stopped}
         volumes:
             - ${CONFIG}/jibri:/config:Z

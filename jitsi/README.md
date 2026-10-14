@@ -11,7 +11,7 @@ On the server the dir is in `/root/docker-jitsi-meet` and config lives in `~/.ji
 - `docker-compose.yml` :: stock, plus etherpad and a `/meetings` volume.
 - `prosody-plugins-custom/mod_meeting_report.lua` :: custom plugin, see below.
 - `jibri/finalize.sh` :: moves a recording into its meeting folder.
-- `gen-mod-token.py` :: makes a moderator JWT, `python gen-mod-token.py <name> [room]`.
+- `gen-mod-token.py` :: moderator JWT; `<name> [room]` for one person, `--universal` for a shared all-rooms token (each user types their own name).
 
 ## Custom: per-meeting report (Lua)
 
@@ -27,13 +27,37 @@ Live transcription (Jigasi + Vosk) was tried and dropped: poor accuracy, too hea
 
 ## Updating
 
-Work in `/root/docker-jitsi-meet` on the server.
+Work in `/root/docker-jitsi-meet`.
 
-- After `.env` changes: `docker compose up -d --force-recreate`.
-- Etherpad not loading? reconnect caddy to the jitsi network:
-  `docker network connect docker-jitsi-meet_meet.jitsi caddy-caddy-1`.
-- Testing a `config.js` change: `docker compose restart web`.
-- Changed a prosody env or volume: recreate it (`docker compose up -d prosody`), a plain `restart` will not reload the module.
+- `.env` change :: `docker compose up -d --force-recreate`.
+- `config.js` change :: `docker compose restart web`.
+- prosody env/volume change :: `docker compose up -d prosody` (recreate; `restart` will not reload the module).
+- etherpad 502 after a recreate :: `docker network connect docker-jitsi-meet_meet.jitsi caddy-caddy-1`.
+
+### Upgrade images
+
+Pinned to GHCR (`ghcr.io/jitsi/*`); docker.io lags months behind. Latest tag: [releases](https://github.com/jitsi/docker-jitsi-meet/releases).
+
+```
+cd /root/docker-jitsi-meet && docker compose pull && docker compose up -d
+docker compose logs prosody | grep "mod_meeting_report loaded on"   # 2 lines = healthy
+```
+
+### Rootless migration (stable-11146, already applied)
+
+New GHCR stable runs non-root (uid 1000) + s6-overlay v3 ([PR #2258](https://github.com/jitsi/docker-jitsi-meet/pull/2258), [handbook](https://jitsi.github.io/handbook/docs/devops-guide/docker)). One-time fixes, listed so a future dev can trace them to source; all are in `docker-compose.yml` except the two host commands:
+
+- exec `/run` tmpfs on every service or it crash-loops :: `tmpfs: - /run:exec,mode=755` ([#2263](https://github.com/jitsi/docker-jitsi-meet/pull/2263)).
+- web binds container `8000`/`8443`, so map host port to `:8000` ([#2261](https://github.com/jitsi/docker-jitsi-meet/pull/2261)).
+- regenerate `~/.jitsi-meet-cfg/prosody` once for uid-1000 cert ownership, else jicofo fails `No stream features` ([#2304](https://github.com/jitsi/docker-jitsi-meet/pull/2304)): `mv` it aside, recreate `config/` + `prosody-plugins-custom/`, copy `mod_meeting_report.lua` back, `up -d prosody && restart jicofo`.
+- `chmod -R 0777 ~/.jitsi-meet-cfg/meetings` so uid-1000 prosody can write reports.
+
+### Keep in mind
+
+- `.env` floats on `stable`; the next pull can bring another rootless change. Pin `stable-NNNNN` to avoid surprises.
+- We still use the old volume layout; upstream moved to `storage/` + `tmp/`. Regenerate compose from stock at a major bump.
+- jibri `cap_add: SYS_ADMIN` is no longer required (harmless, removable).
+- iptables is not persisted (see SSH-lockout below); a reboot can drop host firewall rules.
 
 ## After a Linode reboot: SSH lockout
 
@@ -51,15 +75,19 @@ Fix for good: `apt install iptables-persistent && netfilter-persistent save`, or
 
 ## TODO
 
-- [ ] Force the fossunited team as moderator for everyone. Right now whoever
+- [x] Force the fossunited team as moderator for everyone. Right now whoever
   joins first becomes mod; we want the team to be mod by default (likely needs
   auth or the JWT token above).
+  We've a JWT which gives MOD access for any room if joined anytime.
+
 
 ## Changes
 
 ** Oct 2026**
 
-- Did latest pull and updated jitsi to stable-11031
+- Switched images Docker Hub to GHCR (`ghcr.io/jitsi/*`) and bumped to current `stable` (non-root + s6-overlay v3). Required fixes in "Rootless migration" above.
+- Removed "End meeting for all" (`ENABLE_END_CONFERENCE=0`); grant-moderator stays on.
+- Added `gen-mod-token.py --universal` for a shared all-rooms moderator token.
 
 **Jul 2026**
 
